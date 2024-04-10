@@ -19,9 +19,6 @@ class CommonNode(Node):
         
         super().__init__(id)
         
-        # Unique name of the node
-        self.__id__ = id
-        
         # Indicating if node is currently active and sending commands to interface node
         self._active_ = False
         
@@ -43,18 +40,8 @@ class CommonNode(Node):
         """
         
         msg = Heartbeat()
-        msg.sender_id = self.__id__
+        msg.sender_id = self.get_fully_qualified_name()
         msg.active = self._active_
         self.__tick__ += 1
         msg.tick = self.__tick__
         self.__publisher__.publish(msg)
-    
-    @property
-    def id(self) -> str:
-        """
-        Get the ID of the common node.
-
-        :return: The ID of the common node as string.
-        """
-        
-        return self.__id__
