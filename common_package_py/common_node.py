@@ -32,23 +32,23 @@ class CommonNode(Node):
         # Tick counting upwards with every heartbeat
         self.__tick__ = 0
     
-    def activate(self) -> None:
+    def _activate_(self) -> None:
         """
         Activates the node.
 
         This method sets the `__node_active__` attribute to True, indicating that the node is active.
         """
         self.__node_active__ = True
-        self.get_logger().debug('CommonNode::activate: Activated node')
+        self.get_logger().debug('CommonNode::_activate_: Activated node')
     
-    def deactivate(self) -> None:
+    def _deactivate_(self) -> None:
         """
         Deactivates the node.
 
         Sets the `__node_active__` attribute to False, indicating that the node is no longer active.
         """
         self.__node_active__ = False
-        self.get_logger().debug('CommonNode::deactivate: Deactivated node')
+        self.get_logger().debug('CommonNode::_deactivate_: Deactivated node')
     
     @property
     def active(self) -> bool:

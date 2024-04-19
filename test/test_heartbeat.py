@@ -77,10 +77,10 @@ def test_heartbeat_activate_deactivate():
 
         if msg.active:
             assert not last_msg.active
-            heartbeat_node.deactivate()
+            heartbeat_node._deactivate_()
         else:
             assert last_msg.active
-            heartbeat_node.activate()
+            heartbeat_node._activate_()
 
         last_msg = msg
 
