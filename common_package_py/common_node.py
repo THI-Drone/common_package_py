@@ -1,6 +1,5 @@
 import rclpy
 from rclpy.node import Node
-from builtin_interfaces.msg import Time
 
 from interfaces.msg import Heartbeat
 
@@ -73,7 +72,6 @@ class CommonNode(Node):
         msg.active = self.__node_active__
         self.__tick__ += 1
         msg.tick = self.__tick__
-        now = self.get_clock().now()
-        msg.time_stamp = Time(sec=now.seconds_nanoseconds()[0], nanosec=now.seconds_nanoseconds()[1])
+        msg.time_stamp = self.get_clock().now().to_msg()
         self.__heartbeat_publisher__.publish(msg)
         self.get_logger().debug(f"CommonNode::__heartbeat_timer_callback__: Published heartbeat message with sender_id: {msg.sender_id}, tick: {msg.tick}, active: {msg.active}")
