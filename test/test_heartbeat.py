@@ -42,11 +42,8 @@ def test_heartbeat_rate():
 
     executor.spin()
     assert last_msg.tick == 10
-    
-    rclpy.shutdown()
 
 def test_heartbeat_activate_deactivate():
-    rclpy.init()
     test_node = rclpy.create_node("test")
     
     heartbeat_period = 0.5
@@ -63,14 +60,8 @@ def test_heartbeat_activate_deactivate():
     def heartbeat_callback(msg):
         nonlocal last_msg
         
-        # Calculate the difference in seconds and nanoseconds separately
-        diff_sec = test_node.get_clock().now().to_msg().sec - last_msg.time_stamp.sec
-        diff_nsec = test_node.get_clock().now().to_msg().nanosec - last_msg.time_stamp.nanosec
-
-        # Convert the difference to seconds
-        time_diff = diff_sec + diff_nsec / 1e9
-        
-        assert time_diff <= (heartbeat_period + 0.01)
+        time_diff = test_node.get_clock().now() - Time.from_msg(last_msg.time_stamp)
+        assert time_diff <= rclpy.duration.Duration(seconds=heartbeat_period + 0.01)
         assert msg.tick == last_msg.tick + 1
         assert msg.sender_id == "/heartbeat"
         assert msg.active == heartbeat_node.active
