@@ -20,18 +20,46 @@ class CommonNode(Node):
         super().__init__(id)
         
         # Indicating if node is currently active and sending commands to interface node
-        self._active_ = False
+        self.__node_active__ = False
         
         # Create a publisher for the "heartbeat" topic
-        self.__publisher__ = self.create_publisher(Heartbeat, 'heartbeat', 10)
+        self.__heartbeat_publisher__ = self.create_publisher(Heartbeat, 'heartbeat', 10)
         
         # Create a timer that sends a heartbeat message every 0.5s
-        self.__timer__ = self.create_timer(0.5, self.__timer_callback__)
+        self.__heartbeat_period__  = 0.5
+        self.__heartbeat_timer__ = self.create_timer(self.__heartbeat_period__, self.__heartbeat_timer_callback__)
         
         # Tick counting upwards with every heartbeat
         self.__tick__ = 0
+    
+    def _activate_(self) -> None:
+        """
+        Activates the node.
 
-    def __timer_callback__(self):
+        This method sets the `__node_active__` attribute to True, indicating that the node is active.
+        """
+        self.__node_active__ = True
+        self.get_logger().debug('CommonNode::_activate_: Activated node')
+    
+    def _deactivate_(self) -> None:
+        """
+        Deactivates the node.
+
+        Sets the `__node_active__` attribute to False, indicating that the node is no longer active.
+        """
+        self.__node_active__ = False
+        self.get_logger().debug('CommonNode::_deactivate_: Deactivated node')
+    
+    @property
+    def active(self) -> bool:
+        """
+        Returns the active status of the node.
+
+        :return: True if the node is active, False otherwise.
+        """
+        return self.__node_active__
+
+    def __heartbeat_timer_callback__(self) -> None:
         """
         This method is called by the timer to publish a heartbeat message.
 
@@ -41,7 +69,9 @@ class CommonNode(Node):
         
         msg = Heartbeat()
         msg.sender_id = self.get_fully_qualified_name()
-        msg.active = self._active_
+        msg.active = self.__node_active__
         self.__tick__ += 1
         msg.tick = self.__tick__
-        self.__publisher__.publish(msg)
+        msg.time_stamp = self.get_clock().now().to_msg()
+        self.__heartbeat_publisher__.publish(msg)
+        self.get_logger().debug(f"CommonNode::__heartbeat_timer_callback__: Published heartbeat message with sender_id: {msg.sender_id}, tick: {msg.tick}, active: {msg.active}")
