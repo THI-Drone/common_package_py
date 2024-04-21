@@ -9,7 +9,6 @@ import time
 
 
 def test_heartbeat_rate():
-    rclpy.init()
     common_node = CommonNode("heartbeat")
     test_node = rclpy.create_node("test")
     
@@ -86,8 +85,7 @@ def test_heartbeat_activate_deactivate():
 
     executor.spin()
     assert last_msg.tick == 10
-    
-    rclpy.shutdown()
+
 
 if __name__ == "__main__":
     pytest.main()
