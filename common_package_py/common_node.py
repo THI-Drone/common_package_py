@@ -87,6 +87,16 @@ class CommonNode(Node):
         self.get_logger().debug(f"CommonNode::__heartbeat_timer_callback__: Published heartbeat message with sender_id: {msg.sender_id}, tick: {msg.tick}, active: {msg.active}")
 
     def _job_finished_custom_(self, error_code: int, payload: dict) -> None:
+        """
+        Handles the completion of a job.
+
+        This function sends a job_finished message with the given error code and payload.
+        Additionally, deactivates the node.
+
+        :param error_code: The error code associated with the job completion (self.EXIT_SUCCESS == 0 if no error).
+        :param payload: The payload data associated with the job completion.
+        """
+    
         msg = JobFinished()
         
         msg.sender_id = self.get_fully_qualified_name()
@@ -113,7 +123,7 @@ class CommonNode(Node):
         Additionally, deactivates the node.
         This function should only be used if your job failed.
 
-        :error_message: The error message associated with the job completion.
+        :param error_message: The error message associated with the job completion.
         """
     
         msg = JobFinished()
