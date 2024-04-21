@@ -17,8 +17,7 @@ class CommonNode(Node):
     def __init__(self, id: str):
         """Constructor to create a new node.
 
-        Args:
-            id (str): Node id
+        :param id: Node id
         """
         
         super().__init__(id)
