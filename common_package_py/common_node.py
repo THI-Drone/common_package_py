@@ -1,14 +1,18 @@
+import json
 import rclpy
 from rclpy.node import Node
 
-from interfaces.msg import Heartbeat
-
+from interfaces.msg import Heartbeat, JobFinished
 
 class CommonNode(Node):
     """A class representing a common node.
     
         This class inherits from rclpy.node.Node and provides functionality for creating a node that sends heartbeat messages.
     """
+    
+    # Konstanten
+    EXIT_SUCCESS = 0
+    EXIT_FAILURE = 1
 
     def __init__(self, id: str):
         """Constructor to create a new node.
@@ -23,7 +27,7 @@ class CommonNode(Node):
         self.__node_active__ = False
         
         # Create a publisher for the "heartbeat" topic
-        self.__heartbeat_publisher__ = self.create_publisher(Heartbeat, 'heartbeat', 10)
+        self.__heartbeat_publisher__ = self.create_publisher(Heartbeat, 'heartbeat', 1)
         
         # Create a timer that sends a heartbeat message every 0.5s
         self.__heartbeat_period__  = 0.5
@@ -31,6 +35,9 @@ class CommonNode(Node):
         
         # Tick counting upwards with every heartbeat
         self.__tick__ = 0
+        
+        # Create a publisher for the "job_finished" topic
+        self.__job_finished_publisher__ = self.create_publisher(JobFinished, 'job_finished', 10)
     
     def _activate_(self) -> None:
         """
@@ -68,10 +75,80 @@ class CommonNode(Node):
         """
         
         msg = Heartbeat()
+        
         msg.sender_id = self.get_fully_qualified_name()
         msg.active = self.__node_active__
         self.__tick__ += 1
         msg.tick = self.__tick__
         msg.time_stamp = self.get_clock().now().to_msg()
+        
         self.__heartbeat_publisher__.publish(msg)
+        
         self.get_logger().debug(f"CommonNode::__heartbeat_timer_callback__: Published heartbeat message with sender_id: {msg.sender_id}, tick: {msg.tick}, active: {msg.active}")
+
+    def _job_finished_custom_(self, error_code: str, payload: dict) -> None:
+        msg = JobFinished()
+        
+        msg.sender_id = self.get_fully_qualified_name()
+        msg.error_code = error_code
+        
+        try:
+            msg.payload = json.dumps(payload)
+        except:
+            self.get_logger().fatal("CommonNode::_job_finished_custom_: Payload is not a valid JSON. Stopping node.")
+            exit(CommonNode.EXIT_FAILURE)
+        
+        self.__job_finished_publisher__.publish(msg)
+        self.get_logger().debug("CommonNode::_job_finished_custom_: Sent job_finished message with custom error_code and payload")
+        
+        # Deactivate the node
+        self._deactivate_()
+
+    def _job_finished_error_msg_(self, error_message: str) -> None:
+        """
+        Handles the completion of a job with the given error message.
+        Can be used if your job fails and you just want to return an error message.
+
+        This function formats the error message to JSON and sends a job_finished message with the error message.
+        Additionally, deactivates the node.
+        This function should only be used if your job failed.
+
+        :error_message: The error message associated with the job completion.
+        """
+    
+        msg = JobFinished()
+        
+        msg.sender_id = self.get_fully_qualified_name()
+        msg.error_code = CommonNode.EXIT_FAILURE  # set error code to EXIT_FAILURE to indicate success
+        
+        try:
+            msg.payload = json.dumps({ "error_msg": error_message })
+        except:
+            self.get_logger().fatal("CommonNode::_job_finished_error_msg_: Payload is not a valid JSON. Stopping node.")
+            exit(CommonNode.EXIT_FAILURE)
+        
+        self.__job_finished_publisher__.publish(msg)
+        self.get_logger().debug("CommonNode::_job_finished_error_msg_: Sent job_finished message with given error message and EXIT_FAILURE error code")
+        
+        # Deactivate the node
+        self._deactivate_()
+
+    def _job_finished_successfull_(self) -> None:
+        """
+        Sends a job_finished message with error code 0 and no error message.
+
+        This function should be executed only if your job was completed successfully.
+        Additionally, deactivates the node.
+        """
+    
+        msg = JobFinished()
+        
+        msg.sender_id = self.get_fully_qualified_name()
+        msg.error_code = CommonNode.EXIT_SUCCESS  # set error code to EXIT_SUCCESS to indicate success
+        msg.payload = "{}"  # payload is empty JSON
+        
+        self.__job_finished_publisher__.publish(msg)
+        self.get_logger().debug("CommonNode::_job_finished_successfull_: Sent job_finished message indicating success")
+        
+        # Deactivate the node
+        self._deactivate_()
