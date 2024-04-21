@@ -86,7 +86,7 @@ class CommonNode(Node):
         
         self.get_logger().debug(f"CommonNode::__heartbeat_timer_callback__: Published heartbeat message with sender_id: {msg.sender_id}, tick: {msg.tick}, active: {msg.active}")
 
-    def _job_finished_custom_(self, error_code: str, payload: dict) -> None:
+    def _job_finished_custom_(self, error_code: int, payload: dict) -> None:
         msg = JobFinished()
         
         msg.sender_id = self.get_fully_qualified_name()
@@ -99,7 +99,7 @@ class CommonNode(Node):
             exit(CommonNode.EXIT_FAILURE)
         
         self.__job_finished_publisher__.publish(msg)
-        self.get_logger().debug("CommonNode::_job_finished_custom_: Sent job_finished message with custom error_code and payload")
+        self.get_logger().debug(f"CommonNode::_job_finished_custom_: Sent job_finished message with error_code {error_code} and payload")
         
         # Deactivate the node
         self._deactivate_()
@@ -128,7 +128,7 @@ class CommonNode(Node):
             exit(CommonNode.EXIT_FAILURE)
         
         self.__job_finished_publisher__.publish(msg)
-        self.get_logger().debug("CommonNode::_job_finished_error_msg_: Sent job_finished message with given error message and EXIT_FAILURE error code")
+        self.get_logger().debug(f"CommonNode::_job_finished_error_msg_: Sent job_finished message with error message '{error_message}' and EXIT_FAILURE error code")
         
         # Deactivate the node
         self._deactivate_()
