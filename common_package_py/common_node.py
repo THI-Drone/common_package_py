@@ -10,7 +10,7 @@ class CommonNode(Node):
         This class inherits from rclpy.node.Node and provides functionality for creating a node that sends heartbeat messages.
     """
     
-    # Konstanten
+    # Constants
     EXIT_SUCCESS = 0
     EXIT_FAILURE = 1
 
