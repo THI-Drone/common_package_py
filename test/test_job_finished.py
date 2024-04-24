@@ -9,6 +9,7 @@ from common_package_py.common_node import CommonNode
 
 from interfaces.msg import JobFinished
 
+
 def test_job_finished_successfull():
     executor = SingleThreadedExecutor()
 
@@ -16,7 +17,7 @@ def test_job_finished_successfull():
     assert not common_node.active
     common_node._activate_()
     assert common_node.active
-    
+
     test_node = Node("test")
 
     def job_finished_callback(msg):
@@ -47,6 +48,7 @@ def test_job_finished_successfull():
 
     executor.spin()
 
+
 def test_job_finished_custom_payload():
     executor = SingleThreadedExecutor()
 
@@ -54,7 +56,7 @@ def test_job_finished_custom_payload():
     assert not common_node.active
     common_node._activate_()
     assert common_node.active
-    
+
     test_node = Node("test")
 
     def job_finished_callback(msg):
@@ -65,12 +67,12 @@ def test_job_finished_custom_payload():
         test_node.get_logger().debug("Got job_finished message")
         assert msg.sender_id == "/common_node"
         assert msg.error_code == 5
-        
+
         payload_check = {}
         payload_check["coord"] = "These are my coordinates"
         payload_check["height_cm"] = 500
         assert json.loads(msg.payload) == payload_check
-        
+
         assert not common_node.active
         executor.shutdown(0)
 
@@ -80,7 +82,7 @@ def test_job_finished_custom_payload():
     def timer_callback():
         nonlocal common_node
         test_node.get_logger().debug("Sending job_finished successfull message")
-        
+
         payload = {}
         payload["coord"] = "These are my coordinates"
         payload["height_cm"] = 500
@@ -94,6 +96,7 @@ def test_job_finished_custom_payload():
 
     executor.spin()
 
+
 def test_job_finished_error_message():
     executor = SingleThreadedExecutor()
 
@@ -101,7 +104,7 @@ def test_job_finished_error_message():
     assert not common_node.active
     common_node._activate_()
     assert common_node.active
-    
+
     test_node = Node("test")
 
     def job_finished_callback(msg):
@@ -112,7 +115,8 @@ def test_job_finished_error_message():
         test_node.get_logger().debug("Got job_finished message")
         assert msg.sender_id == "/common_node"
         assert msg.error_code == common_node.EXIT_FAILURE
-        assert json.loads(msg.payload) == { "error_msg": "This is my error message" }
+        assert json.loads(msg.payload) == {
+            "error_msg": "This is my error message"}
         assert not common_node.active
         executor.shutdown(0)
 
