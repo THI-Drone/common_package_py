@@ -11,7 +11,7 @@ import time
 def test_heartbeat_rate():
     common_node = CommonNode("heartbeat")
     test_node = rclpy.create_node("test")
-    
+
     heartbeat_period = 0.5
     executor = SingleThreadedExecutor()
 
@@ -21,20 +21,23 @@ def test_heartbeat_rate():
 
     def heartbeat_callback(msg):
         nonlocal last_msg
-        
+
         time_diff = test_node.get_clock().now() - Time.from_msg(last_msg.time_stamp)
-        assert time_diff <= rclpy.duration.Duration(seconds=heartbeat_period + 0.01)
+        assert time_diff <= rclpy.duration.Duration(
+            seconds=heartbeat_period + 0.01)
         assert msg.tick == last_msg.tick + 1
         assert not msg.active
         assert msg.sender_id == "/heartbeat"
         last_msg = msg
 
-    heartbeat_sub = test_node.create_subscription(Heartbeat, "heartbeat", heartbeat_callback, 1)
+    heartbeat_sub = test_node.create_subscription(
+        Heartbeat, "heartbeat", heartbeat_callback, 1)
 
     def end_timer_callback():
         executor.shutdown(0)
 
-    end_timer = test_node.create_timer(heartbeat_period * 10, end_timer_callback)
+    end_timer = test_node.create_timer(
+        heartbeat_period * 10, end_timer_callback)
 
     executor.add_node(common_node)
     executor.add_node(test_node)
@@ -42,9 +45,10 @@ def test_heartbeat_rate():
     executor.spin()
     assert last_msg.tick == 10
 
+
 def test_heartbeat_activate_deactivate():
     test_node = rclpy.create_node("test")
-    
+
     heartbeat_period = 0.5
     executor = SingleThreadedExecutor()
 
@@ -58,9 +62,10 @@ def test_heartbeat_activate_deactivate():
 
     def heartbeat_callback(msg):
         nonlocal last_msg
-        
+
         time_diff = test_node.get_clock().now() - Time.from_msg(last_msg.time_stamp)
-        assert time_diff <= rclpy.duration.Duration(seconds=heartbeat_period + 0.01)
+        assert time_diff <= rclpy.duration.Duration(
+            seconds=heartbeat_period + 0.01)
         assert msg.tick == last_msg.tick + 1
         assert msg.sender_id == "/heartbeat"
         assert msg.active == heartbeat_node.active
@@ -74,12 +79,14 @@ def test_heartbeat_activate_deactivate():
 
         last_msg = msg
 
-    heartbeat_sub = test_node.create_subscription(Heartbeat, "heartbeat", heartbeat_callback, 1)
+    heartbeat_sub = test_node.create_subscription(
+        Heartbeat, "heartbeat", heartbeat_callback, 1)
 
     def end_timer_callback():
         executor.shutdown(0)
 
-    end_timer = test_node.create_timer(heartbeat_period * 10.1, end_timer_callback)
+    end_timer = test_node.create_timer(
+        heartbeat_period * 10.1, end_timer_callback)
 
     executor.add_node(test_node)
 
