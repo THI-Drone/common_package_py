@@ -23,23 +23,36 @@ class JsonKeyDefinition:
 
     Args:
         required (bool): Indicates whether the key is required.
-        data_types (set[data_type]): Set of data types that the key can have.
+        data_types (set[data_type] | data_type): Set of data types that the key can have or a single data type.
         min_val (float | None, optional): Minimum value allowed for numeric keys. Defaults to None.
         max_val (float | None, optional): Maximum value allowed for numeric keys. Defaults to None.
     """
 
-    def __init__(self, required: bool, data_types: set[data_type], min_val: float | None = None, max_val: float | None = None):
+    def __init__(self, required: bool, data_types: set[data_type] | data_type, min_val: float | None = None, max_val: float | None = None):
         self.required = required
 
+        # Check if data_types is a single data_type and convert it to a set
+        if isinstance(data_types, data_type):
+            data_types = {data_types}
+            
+        # Check if data_types is a set
         if not isinstance(data_types, set):
-            raise RuntimeError(
-                "JsonKeyDefinition::JsonKeyDefinition: data_types is not a set")
+            raise RuntimeError(f"JsonKeyDefinition::JsonKeyDefinition: data_types has the wrong type: {type(data_types)}")
+        
+        # Check if each element in data_types is of type data_type
+        for dt in data_types:
+            if not isinstance(dt, data_type):
+                raise RuntimeError(f"JsonKeyDefinition::JsonKeyDefinition: data_type '{dt}' has the wrong type: {type(dt)}. Expected: {type(data_type)}")
 
+        # Check if data_types is not empty
         if len(data_types) <= 0:
             raise RuntimeError(
-                "JsonKeyDefinition::JsonKeyDefinition: data_types is empty")
+            "JsonKeyDefinition::JsonKeyDefinition: data_types is empty")
 
+        # Set the data_types attribute
         self.data_types = data_types
+
+        # Check if min_val and max_val are provided and swap them if min_val > max_val
         if min_val is not None and max_val is not None and min_val > max_val:
             self.min_val, self.max_val = max_val, min_val
         else:
