@@ -14,6 +14,18 @@ class CommonNode(Node):
     # Constants
     EXIT_SUCCESS = 0
     EXIT_FAILURE = 1
+    
+    # Maximum allowed flight height in cm
+    MAX_FLIGHT_HEIGHT_CM = 120 * 100  # [m] * 100
+
+    # Minimum required cruise height in cm
+    MIN_CRUISE_HEIGHT_CM = 5 * 100  # [m] * 100
+
+    # Maximum allowed horizontal speed in m/s
+    MAX_HORIZONTAL_SPEED_MPS = 12.0  # [m/s]
+
+    # Maximum allowed vertical speed in m/s
+    MAX_VERTICAL_SPEED_MPS = 3.0  # [m/s]
 
     def __init__(self, id: str):
         """Constructor to create a new node.
