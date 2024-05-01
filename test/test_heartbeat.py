@@ -43,6 +43,7 @@ def test_heartbeat_rate():
     executor.add_node(test_node)
 
     executor.spin()
+    del executor
     assert last_msg.tick == 10
 
 
@@ -91,6 +92,7 @@ def test_heartbeat_activate_deactivate():
     executor.add_node(test_node)
 
     executor.spin()
+    del executor
     assert last_msg.tick == 10
 
 

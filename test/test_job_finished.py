@@ -1,5 +1,4 @@
 import pytest
-import time
 import json
 import rclpy
 from rclpy.executors import SingleThreadedExecutor
@@ -47,6 +46,7 @@ def test_job_finished_successfull():
     executor.add_node(test_node)
 
     executor.spin()
+    del executor
 
 
 def test_job_finished_custom_payload():
@@ -95,6 +95,7 @@ def test_job_finished_custom_payload():
     executor.add_node(test_node)
 
     executor.spin()
+    del executor
 
 
 def test_job_finished_error_message():
@@ -135,6 +136,7 @@ def test_job_finished_error_message():
     executor.add_node(test_node)
 
     executor.spin()
+    del executor
 
 
 if __name__ == "__main__":
