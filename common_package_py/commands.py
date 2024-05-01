@@ -1,6 +1,7 @@
 import json
 import rclpy
 from enum import Enum
+from common_package_py.common_node import CommonNode
 
 
 class data_type(Enum):
@@ -55,7 +56,7 @@ class JsonKeyDefinition:
         Returns:
             str: The string representation of the data type.
         """
-        
+
         return data_type.name.lower()
 
     def check_bounds(self, json_iter: any) -> bool:
@@ -65,7 +66,7 @@ class JsonKeyDefinition:
         supported data types. Only specified bounds are checked. If no bounds are
         specified, all values will be accepted. Every data type that is not of
         any `number*` data type will always return true.
-        
+
         Note:
             Also returns true if the json_iter has a type different from `number*`
 
@@ -75,12 +76,12 @@ class JsonKeyDefinition:
         Returns:
             bool: True if the value is within the bounds, False otherwise.
         """
-        
+
         jsk_type_check = JsonKeyDefinition(False, {data_type.NUMBER})
 
         if data_type.NUMBER in self.data_types or \
                 data_type.NUMBER_FLOAT in self.data_types or \
-            data_type.NUMBER_INTEGER in self.data_types or \
+        data_type.NUMBER_INTEGER in self.data_types or \
                 data_type.NUMBER_UNSIGNED in self.data_types:
 
             if self.min_val is not None and jsk_type_check.type_check(json_iter) and json_iter < self.min_val:
@@ -99,7 +100,7 @@ class JsonKeyDefinition:
         Returns:
             bool: True if the value matches any of the allowed data types, False otherwise.
         """
-        
+
         for data_type in self.data_types:
             match data_type:
                 case data_type.NULL:
@@ -145,7 +146,7 @@ class JsonKeyDefinition:
         Returns:
             bool: True if the objects are equal, False otherwise.
         """
-        
+
         return self.required == other.required and self.data_types == other.data_types and self.min_val == other.min_val and self.max_val == other.max_val
 
 
@@ -171,7 +172,7 @@ class CommandDefinitions:
     def parse_check_json_str(json_str: str, definition: dict) -> json:
         """
         Parses and checks a JSON string based on the given definition.
-        
+
         Note:
             The function can only be fully used on shallow JSONs. Arrays or
             encapsulations contents' will not be checked! Call this function several
@@ -187,7 +188,7 @@ class CommandDefinitions:
         Raises:
             RuntimeError: With an error message why the parsing or check failed
         """
-        
+
         try:
             candidate = json.loads(json_str)
         except json.JSONDecodeError as e:
@@ -200,16 +201,16 @@ class CommandDefinitions:
     def parse_check_json(json_obj: json, definition: dict) -> json:
         """
         Parses and checks a JSON object based on the given definition.
-        
+
         Only use this version if you already have a json object.
         If you only have a string, use the `parse_check_json_str` function
         instead to do a proper parsing.
-        
+
         Steps:
         - Checks that no undefined keys are in the JSON
         - Checks that all required keys exist
         - Checks that all values have the correct type
-        
+
         Note:
             The function can only be fully used on shallow JSONs. Arrays or
             encapsulations contents' will not be checked! Call this function several
@@ -226,7 +227,7 @@ class CommandDefinitions:
             RuntimeError: If unknown keys are found, if required keys are missing, if values are out of bounds,
                 or if values have the wrong type. An error message why the check failed is included.
         """
-        
+
         # Check that all keys are allowed
         # If true, unknown keys were found and an exception will be thrown
         unknown_key_found = False
@@ -284,3 +285,45 @@ class CommandDefinitions:
 
         # Json object successfully passed all checks
         return json_obj
+
+    @staticmethod
+    def get_detect_marker_command_definition() -> dict[str, JsonKeyDefinition]:
+        """
+        Returns the command definition for detecting markers.
+
+        Returns:
+            dict[str, JsonKeyDefinition]: The command definition with the following keys:
+                - 'detection_height_cm': A JsonKeyDefinition object representing the detection height in centimeters.
+        """
+
+        return {"detection_height_cm": JsonKeyDefinition(True, data_type.NUMBER_UNSIGNED, 0, CommonNode.MAX_FLIGHT_HEIGHT_CM)}
+
+    @staticmethod
+    def get_definition(type: str) -> dict[str, JsonKeyDefinition]:
+        """
+        Retrieves the definition for the given command type.
+
+        Args:
+            type (str): The type of the command.
+
+        Returns:
+            dict[str, JsonKeyDefinition]: The command definition.
+
+        Raises:
+            RuntimeError: If the command type is not recognized or not available in the Python version.
+        """
+
+        match type:
+            case "waypoint":
+                raise RuntimeError(
+                    f"This definition is currently not available in the Python version. Type: {type}")
+            case "detect_marker":
+                return CommandDefinitions.get_detect_marker_command_definition()
+            case "drop_payload":
+                raise RuntimeError(
+                    f"This definition is currently not available in the Python version. Type: {type}")
+            case "end_mission":
+                return dict()
+            case _:
+                raise RuntimeError(
+                    f"CommandDefinitions::get_definition: Unknown type: {type}")
