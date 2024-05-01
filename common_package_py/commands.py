@@ -34,20 +34,22 @@ class JsonKeyDefinition:
         # Check if data_types is a single data_type and convert it to a set
         if isinstance(data_types, data_type):
             data_types = {data_types}
-            
+
         # Check if data_types is a set
         if not isinstance(data_types, set):
-            raise RuntimeError(f"JsonKeyDefinition::JsonKeyDefinition: data_types has the wrong type: {type(data_types)}")
-        
+            raise RuntimeError(
+                f"JsonKeyDefinition::JsonKeyDefinition: data_types has the wrong type: {type(data_types)}")
+
         # Check if each element in data_types is of type data_type
         for dt in data_types:
             if not isinstance(dt, data_type):
-                raise RuntimeError(f"JsonKeyDefinition::JsonKeyDefinition: data_type '{dt}' has the wrong type: {type(dt)}. Expected: {type(data_type)}")
+                raise RuntimeError(
+                    f"JsonKeyDefinition::JsonKeyDefinition: data_type '{dt}' has the wrong type: {type(dt)}. Expected: {type(data_type)}")
 
         # Check if data_types is not empty
         if len(data_types) <= 0:
             raise RuntimeError(
-            "JsonKeyDefinition::JsonKeyDefinition: data_types is empty")
+                "JsonKeyDefinition::JsonKeyDefinition: data_types is empty")
 
         # Set the data_types attribute
         self.data_types = data_types
@@ -94,7 +96,7 @@ class JsonKeyDefinition:
 
         if data_type.NUMBER in self.data_types or \
                 data_type.NUMBER_FLOAT in self.data_types or \
-        data_type.NUMBER_INTEGER in self.data_types or \
+            data_type.NUMBER_INTEGER in self.data_types or \
                 data_type.NUMBER_UNSIGNED in self.data_types:
 
             if self.min_val is not None and jsk_type_check.type_check(json_iter) and json_iter < self.min_val:

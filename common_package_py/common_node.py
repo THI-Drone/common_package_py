@@ -14,7 +14,7 @@ class CommonNode(Node):
     # Constants
     EXIT_SUCCESS = 0
     EXIT_FAILURE = 1
-    
+
     # Maximum allowed flight height in cm
     MAX_FLIGHT_HEIGHT_CM = 120 * 100  # [m] * 100
 
