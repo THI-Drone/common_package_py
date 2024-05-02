@@ -1,10 +1,11 @@
 import json
 import rclpy
-from enum import Enum
+from enum import IntEnum, unique
 from common_package_py.common_node import CommonNode
 
 
-class data_type(Enum):
+@unique
+class data_type(IntEnum):
     """Enumeration representing the data types."""
     NULL = 1
     BOOLEAN = 2
