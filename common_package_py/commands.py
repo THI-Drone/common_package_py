@@ -96,7 +96,7 @@ class JsonKeyDefinition:
 
         if data_type.NUMBER in self.data_types or \
                 data_type.NUMBER_FLOAT in self.data_types or \
-            data_type.NUMBER_INTEGER in self.data_types or \
+        data_type.NUMBER_INTEGER in self.data_types or \
                 data_type.NUMBER_UNSIGNED in self.data_types:
 
             if self.min_val is not None and jsk_type_check.type_check(json_iter) and json_iter < self.min_val:
@@ -244,18 +244,11 @@ class CommandDefinitions:
         """
 
         # Check that all keys are allowed
-        # If true, unknown keys were found and an exception will be thrown
-        unknown_key_found = False
-        unknown_keys = []  # List with all unknown keys that were found
-
-        for key, val in json_obj.items():
-            # Check if key is unknown
-            if key not in definition:
-                unknown_keys.append(key)
-                unknown_key_found = True
+        # Set with all unknown keys that were found
+        unknown_keys = json_obj.keys() - definition
 
         # Check if at least one unknown key was found
-        if unknown_key_found:
+        if len(unknown_keys) > 0:
             raise RuntimeError(
                 f"CommandDefinitions::parse_check_json: Unknown key(s) found: {', '.join(unknown_keys)}")
 
