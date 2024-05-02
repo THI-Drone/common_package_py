@@ -49,6 +49,7 @@ def test_job_finished_successfull():
     del executor
 
 
+
 def test_job_finished_custom_payload():
     executor = SingleThreadedExecutor()
 
@@ -96,6 +97,7 @@ def test_job_finished_custom_payload():
 
     executor.spin()
     del executor
+
 
 
 def test_job_finished_error_message():
