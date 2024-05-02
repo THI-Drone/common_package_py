@@ -92,7 +92,7 @@ class CommonNode(Node):
 
         msg = Heartbeat()
 
-        msg.sender_id = self.get_fully_qualified_name()
+        msg.sender_id = self.get_name()
         msg.active = self.__node_active__
         self.__tick__ += 1
         msg.tick = self.__tick__
@@ -116,7 +116,7 @@ class CommonNode(Node):
 
         msg = JobFinished()
 
-        msg.sender_id = self.get_fully_qualified_name()
+        msg.sender_id = self.get_name()
         msg.error_code = error_code
 
         try:
@@ -147,7 +147,7 @@ class CommonNode(Node):
 
         msg = JobFinished()
 
-        msg.sender_id = self.get_fully_qualified_name()
+        msg.sender_id = self.get_name()
         # set error code to EXIT_FAILURE to indicate success
         msg.error_code = CommonNode.EXIT_FAILURE
 
@@ -175,7 +175,7 @@ class CommonNode(Node):
 
         msg = JobFinished()
 
-        msg.sender_id = self.get_fully_qualified_name()
+        msg.sender_id = self.get_name()
         # set error code to EXIT_SUCCESS to indicate success
         msg.error_code = CommonNode.EXIT_SUCCESS
         msg.payload = "{}"  # payload is empty JSON

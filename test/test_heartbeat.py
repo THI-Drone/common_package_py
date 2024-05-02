@@ -27,7 +27,7 @@ def test_heartbeat_rate():
             seconds=heartbeat_period + 0.01)
         assert msg.tick == last_msg.tick + 1
         assert not msg.active
-        assert msg.sender_id == "/heartbeat"
+        assert msg.sender_id == "heartbeat"
         last_msg = msg
 
     heartbeat_sub = test_node.create_subscription(
@@ -68,7 +68,7 @@ def test_heartbeat_activate_deactivate():
         assert time_diff <= rclpy.duration.Duration(
             seconds=heartbeat_period + 0.01)
         assert msg.tick == last_msg.tick + 1
-        assert msg.sender_id == "/heartbeat"
+        assert msg.sender_id == "heartbeat"
         assert msg.active == heartbeat_node.active
 
         if msg.active:

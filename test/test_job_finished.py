@@ -25,7 +25,7 @@ def test_job_finished_successfull():
         nonlocal executor
 
         test_node.get_logger().debug("Got job_finished message")
-        assert msg.sender_id == "/common_node"
+        assert msg.sender_id == "common_node"
         assert msg.error_code == common_node.EXIT_SUCCESS
         assert json.loads(msg.payload) == {}
         assert not common_node.active
@@ -65,7 +65,7 @@ def test_job_finished_custom_payload():
         nonlocal executor
 
         test_node.get_logger().debug("Got job_finished message")
-        assert msg.sender_id == "/common_node"
+        assert msg.sender_id == "common_node"
         assert msg.error_code == 5
 
         payload_check = {}
@@ -114,7 +114,7 @@ def test_job_finished_error_message():
         nonlocal executor
 
         test_node.get_logger().debug("Got job_finished message")
-        assert msg.sender_id == "/common_node"
+        assert msg.sender_id == "common_node"
         assert msg.error_code == common_node.EXIT_FAILURE
         assert json.loads(msg.payload) == {
             "error_msg": "This is my error message"}
