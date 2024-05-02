@@ -27,7 +27,7 @@ class CommonNode(Node):
     # Maximum allowed vertical speed in m/s
     MAX_VERTICAL_SPEED_MPS = 3.0  # [m/s]
 
-    def __init__(self, id: str):
+    def __init__(self, id: str) -> None:
         """Constructor to create a new node.
 
         :param id: Node id

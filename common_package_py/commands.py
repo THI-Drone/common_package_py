@@ -29,7 +29,7 @@ class JsonKeyDefinition:
         max_val (float | None, optional): Maximum value allowed for numeric keys. Defaults to None.
     """
 
-    def __init__(self, required: bool, data_types: set[data_type] | data_type, min_val: float | None = None, max_val: float | None = None):
+    def __init__(self, required: bool, data_types: set[data_type] | data_type, min_val: float | None = None, max_val: float | None = None) -> None:
         self.required = required
 
         # Check if data_types is a single data_type and convert it to a set
