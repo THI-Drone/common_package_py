@@ -305,7 +305,7 @@ class CommandDefinitions:
                 - 'detection_height_cm': A JsonKeyDefinition object representing the detection height in centimeters.
         """
 
-        return {"detection_height_cm": JsonKeyDefinition(True, data_type.NUMBER_UNSIGNED, 0, CommonNode.MAX_FLIGHT_HEIGHT_CM)}
+        return {"timeout_ms": JsonKeyDefinition(True, data_type.NUMBER_UNSIGNED, 0, 3 * 60 * 1000)}
 
     @staticmethod
     def get_definition(type: str) -> dict[str, JsonKeyDefinition]:
@@ -328,9 +328,6 @@ class CommandDefinitions:
                     f"This definition is currently not available in the Python version. Type: {type}")
             case "detect_marker":
                 return CommandDefinitions.get_detect_marker_command_definition()
-            case "drop_payload":
-                raise RuntimeError(
-                    f"This definition is currently not available in the Python version. Type: {type}")
             case "end_mission":
                 return dict()
             case _:
