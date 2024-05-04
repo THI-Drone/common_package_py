@@ -27,6 +27,9 @@ class CommonNode(Node):
     # Maximum allowed vertical speed in m/s
     MAX_VERTICAL_SPEED_MPS = 3.0  # [m/s]
 
+    # Minimum SOC after which a RTH is triggered
+    MIN_SOC_PERCENT = 30.0  # [%]
+
     def __init__(self, id: str) -> None:
         """Constructor to create a new node.
 
