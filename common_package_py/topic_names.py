@@ -9,6 +9,7 @@ class TopicNames:
     UAVCommand = "uav_command"
     UAVHealth = "uav_health"
     UAVWaypointCommand = "uav_waypoint_command"
+    FlightState = "uav_flight_state"
 
     # Mission Control
     Control = "control"
