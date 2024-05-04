@@ -3,6 +3,7 @@ import rclpy
 from rclpy.node import Node
 
 from interfaces.msg import Heartbeat, JobFinished
+from common_package_py.topic_names import TopicNames
 
 
 class CommonNode(Node):
@@ -44,7 +45,7 @@ class CommonNode(Node):
 
         # Create a publisher for the "heartbeat" topic
         self.__heartbeat_publisher__ = self.create_publisher(
-            Heartbeat, 'heartbeat', 1)
+            Heartbeat, TopicNames.Heartbeat, 1)
 
         # Create a timer that sends a heartbeat message every 0.5s
         self.__heartbeat_period__ = 0.5
@@ -56,7 +57,7 @@ class CommonNode(Node):
 
         # Create a publisher for the "job_finished" topic
         self.__job_finished_publisher__ = self.create_publisher(
-            JobFinished, 'job_finished', 10)
+            JobFinished, TopicNames.JobFinished, 10)
 
     def _activate_(self) -> None:
         """
