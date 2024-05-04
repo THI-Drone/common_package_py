@@ -1,4 +1,6 @@
 class TopicNames:
+    # Topic names by there message names
+    
     # FCC Bridge
     BatteryState = "uav_battery_state"
     GPSPosition = "uav_gps_position"
