@@ -15,7 +15,19 @@ class CommonNode(Node):
     EXIT_SUCCESS = 0
     EXIT_FAILURE = 1
 
-    def __init__(self, id: str):
+    # Maximum allowed flight height in cm
+    MAX_FLIGHT_HEIGHT_CM = 120 * 100  # [m] * 100
+
+    # Minimum required cruise height in cm
+    MIN_CRUISE_HEIGHT_CM = 5 * 100  # [m] * 100
+
+    # Maximum allowed horizontal speed in m/s
+    MAX_HORIZONTAL_SPEED_MPS = 12.0  # [m/s]
+
+    # Maximum allowed vertical speed in m/s
+    MAX_VERTICAL_SPEED_MPS = 3.0  # [m/s]
+
+    def __init__(self, id: str) -> None:
         """Constructor to create a new node.
 
         :param id: Node id
@@ -80,7 +92,7 @@ class CommonNode(Node):
 
         msg = Heartbeat()
 
-        msg.sender_id = self.get_fully_qualified_name()
+        msg.sender_id = self.get_name()
         msg.active = self.__node_active__
         self.__tick__ += 1
         msg.tick = self.__tick__
@@ -104,7 +116,7 @@ class CommonNode(Node):
 
         msg = JobFinished()
 
-        msg.sender_id = self.get_fully_qualified_name()
+        msg.sender_id = self.get_name()
         msg.error_code = error_code
 
         try:
@@ -135,7 +147,7 @@ class CommonNode(Node):
 
         msg = JobFinished()
 
-        msg.sender_id = self.get_fully_qualified_name()
+        msg.sender_id = self.get_name()
         # set error code to EXIT_FAILURE to indicate success
         msg.error_code = CommonNode.EXIT_FAILURE
 
@@ -163,7 +175,7 @@ class CommonNode(Node):
 
         msg = JobFinished()
 
-        msg.sender_id = self.get_fully_qualified_name()
+        msg.sender_id = self.get_name()
         # set error code to EXIT_SUCCESS to indicate success
         msg.error_code = CommonNode.EXIT_SUCCESS
         msg.payload = "{}"  # payload is empty JSON

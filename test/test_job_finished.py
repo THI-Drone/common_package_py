@@ -1,5 +1,4 @@
 import pytest
-import time
 import json
 import rclpy
 from rclpy.executors import SingleThreadedExecutor
@@ -26,7 +25,7 @@ def test_job_finished_successfull():
         nonlocal executor
 
         test_node.get_logger().debug("Got job_finished message")
-        assert msg.sender_id == "/common_node"
+        assert msg.sender_id == "common_node"
         assert msg.error_code == common_node.EXIT_SUCCESS
         assert json.loads(msg.payload) == {}
         assert not common_node.active
@@ -47,6 +46,7 @@ def test_job_finished_successfull():
     executor.add_node(test_node)
 
     executor.spin()
+    del executor
 
 
 def test_job_finished_custom_payload():
@@ -65,7 +65,7 @@ def test_job_finished_custom_payload():
         nonlocal executor
 
         test_node.get_logger().debug("Got job_finished message")
-        assert msg.sender_id == "/common_node"
+        assert msg.sender_id == "common_node"
         assert msg.error_code == 5
 
         payload_check = {}
@@ -95,6 +95,7 @@ def test_job_finished_custom_payload():
     executor.add_node(test_node)
 
     executor.spin()
+    del executor
 
 
 def test_job_finished_error_message():
@@ -113,7 +114,7 @@ def test_job_finished_error_message():
         nonlocal executor
 
         test_node.get_logger().debug("Got job_finished message")
-        assert msg.sender_id == "/common_node"
+        assert msg.sender_id == "common_node"
         assert msg.error_code == common_node.EXIT_FAILURE
         assert json.loads(msg.payload) == {
             "error_msg": "This is my error message"}
@@ -135,6 +136,7 @@ def test_job_finished_error_message():
     executor.add_node(test_node)
 
     executor.spin()
+    del executor
 
 
 if __name__ == "__main__":
