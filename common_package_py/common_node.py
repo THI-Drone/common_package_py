@@ -1,6 +1,9 @@
 import json
 import rclpy
 from rclpy.node import Node
+from rclpy import NodeOptions
+from rclpy.qos import QoSProfile, QoSHistoryPolicy, QoSReliabilityPolicy, QoSDurabilityPolicy, QoSLivelinessPolicy
+from rclpy.duration import Duration
 
 from interfaces.msg import Heartbeat, JobFinished
 from common_package_py.topic_names import TopicNames
@@ -11,6 +14,28 @@ class CommonNode(Node):
 
         This class inherits from rclpy.node.Node and provides functionality for creating a node that sends heartbeat messages.
     """
+
+    """rosout QoS to explicitly set the rosout for Nodes subclassing
+    CommonNode
+
+    See:
+    1. https://docs.ros.org/en/humble/p/rclcpp/generated/classrclcpp_1_1QoS.html#_CPPv4N6rclcpp3QoSE
+    2. https://docs.ros.org/en/humble/p/rclcpp/generated/structrclcpp_1_1QoSInitialization.html#_CPPv4N6rclcpp17QoSInitializationE
+    3. https://docs.ros.org/en/humble/p/rmw/generated/structrmw__qos__profile__s.html#_CPPv417rmw_qos_profile_s
+    4. https://design.ros2.org/articles/qos_deadline_liveliness_lifespan.html
+    """
+    # This variable holds the default values for the QoS
+    __ROSOUT_QOS__ = QoSProfile(
+        depth=1,  # Ignored
+        history=QoSHistoryPolicy.KEEP_LAST,
+        reliability=QoSReliabilityPolicy.BEST_EFFORT,
+        durability=QoSDurabilityPolicy.VOLATILE,
+        deadline=Duration(seconds=0, nanoseconds=0),
+        lifespan=Duration(seconds=1, nanoseconds=0),
+        liveliness=QoSLivelinessPolicy.AUTOMATIC,
+        liveliness_lease_duration=Duration(seconds=-1),
+        avoid_ros_namespace_conventions=False
+    )
 
     # Constants
     EXIT_SUCCESS = 0
@@ -31,13 +56,14 @@ class CommonNode(Node):
     # Minimum SOC after which a RTH is triggered
     MIN_SOC_PERCENT = 30.0  # [%]
 
-    def __init__(self, id: str) -> None:
+    def __init__(self, id: str, options: NodeOptions = NodeOptions()) -> None:
         """Constructor to create a new node.
 
         :param id: Node id
+        :param options: Optional NodeOptions
         """
 
-        super().__init__(id)
+        super().__init__(id, options.rosout_qos(self.__ROSOUT_QOS__))
 
         # Indicating if node is currently active and sending commands to
         # interface node
@@ -60,8 +86,7 @@ class CommonNode(Node):
             JobFinished, TopicNames.JobFinished, 10)
 
     def _activate_(self) -> None:
-        """
-        Activates the node.
+        """Activates the node.
 
         This method sets the `__node_active__` attribute to True, indicating that the node is active.
         """
@@ -69,8 +94,7 @@ class CommonNode(Node):
         self.get_logger().debug('CommonNode::_activate_: Activated node')
 
     def _deactivate_(self) -> None:
-        """
-        Deactivates the node.
+        """Deactivates the node.
 
         Sets the `__node_active__` attribute to False, indicating that the node is no longer active.
         """
@@ -79,16 +103,14 @@ class CommonNode(Node):
 
     @property
     def active(self) -> bool:
-        """
-        Returns the active status of the node.
+        """Returns the active status of the node.
 
         :return: True if the node is active, False otherwise.
         """
         return self.__node_active__
 
     def __heartbeat_timer_callback__(self) -> None:
-        """
-        This method is called by the timer to publish a heartbeat message.
+        """This method is called by the timer to publish a heartbeat message.
 
         It creates a Heartbeat message, sets the sender ID, active status, and tick count,
         and publishes the message using the publisher.
@@ -108,8 +130,7 @@ class CommonNode(Node):
             f"CommonNode::__heartbeat_timer_callback__: Published heartbeat message with sender_id: {msg.sender_id}, tick: {msg.tick}, active: {msg.active}")
 
     def _job_finished_custom_(self, error_code: int, payload: dict) -> None:
-        """
-        Handles the completion of a job.
+        """Handles the completion of a job.
 
         This function sends a job_finished message with the given error code and payload.
         Additionally, deactivates the node.
@@ -138,8 +159,7 @@ class CommonNode(Node):
         self._deactivate_()
 
     def _job_finished_error_msg_(self, error_message: str) -> None:
-        """
-        Handles the completion of a job with the given error message.
+        """Handles the completion of a job with the given error message.
         Can be used if your job fails and you just want to return an error message.
 
         This function formats the error message to JSON and sends a job_finished message with the error message.
@@ -170,8 +190,7 @@ class CommonNode(Node):
         self._deactivate_()
 
     def _job_finished_successfull_(self) -> None:
-        """
-        Sends a job_finished message with error code 0 and no error message.
+        """Sends a job_finished message with error code 0 and no error message.
 
         This function should be executed only if your job was completed successfully.
         Additionally, deactivates the node.
