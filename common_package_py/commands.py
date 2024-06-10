@@ -328,6 +328,9 @@ class CommandDefinitions:
                     f"This definition is currently not available in the Python version. Type: {type}")
             case "detect_marker":
                 return CommandDefinitions.get_detect_marker_command_definition()
+            case "set_marker":
+                raise RuntimeError(
+                    f"This definition is currently not available in the Python version. Type: {type}")
             case "end_mission":
                 return dict()
             case _:
